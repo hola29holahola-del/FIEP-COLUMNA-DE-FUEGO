@@ -1,0 +1,68 @@
+{
+  "entities": {
+    "Configuracion": {
+      "title": "Configuración de la Plataforma",
+      "description": "Configuración global editable en tiempo real por el equipo administrador",
+      "type": "object",
+      "properties": {
+        "logoUrl": { "type": "string", "description": "URL de la imagen del logotipo de la federación" },
+        "quienesSomosText": { "type": "string", "description": "Reseña histórica global" },
+        "misionText": { "type": "string", "description": "Misión institucional de la federación" },
+        "visionText": { "type": "string", "description": "Visión institucional de la federación" },
+        "valoresText": { "type": "string", "description": "Valores fundamentales en formato texto" },
+        "directorWhatsApp": { "type": "string", "description": "Número de teléfono celular del Director de Instituto" },
+        "institutoResena": { "type": "string", "description": "Reseña informativa del Instituto Bíblico" },
+        "institutoProfesores": { "type": "string", "description": "Listado o detalles de catedráticos del Instituto" },
+        "institutoLugares": { "type": "string", "description": "Lugares y horarios donde se imparten las clases" }
+      }
+    },
+    "Usuario": {
+      "title": "Registro de Miembro",
+      "description": "Información detallada de de un miembro de la federación accesible por QR",
+      "type": "object",
+      "properties": {
+        "nombres": { "type": "string", "description": "Nombres del miembro" },
+        "apellidos": { "type": "string", "description": "Apellidos del miembro" },
+        "cedula": { "type": "string", "description": "Cédula o documento nacional de identidad" },
+        "edad": { "type": "number", "description": "Edad del miembro" },
+        "iglesia": { "type": "string", "description": "Iglesia evangélica local en la que se congrega" },
+        "zona": { "type": "string", "description": "Zona geográfica o distrito" },
+        "ministerio": { "type": "string", "description": "Ministerio ejerce (ej: Pastor, Evangelista, Diácono)" },
+        "photoUrl": { "type": "string", "description": "URL de la foto de credencial del usuario en Storage" },
+        "departamento": { "type": "string", "description": "Clasificación de departamento extra: evangelismo, pastores, etc." },
+        "status": { "type": "string", "description": "Estado del ministerio (ej: activo)" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Fecha y hora cuando se finalizó el registro" }
+      },
+      "required": ["nombres", "apellidos", "cedula", "iglesia", "ministerio", "photoUrl"]
+    },
+    "InscritoInstituto": {
+      "title": "Inscripción del Instituto",
+      "description": "Datos de pre-inscripción del Instituto Bíblico enviados por visitantes",
+      "type": "object",
+      "properties": {
+        "nombres": { "type": "string", "description": "Primer y segundo nombre del estudiante" },
+        "apellidos": { "type": "string", "description": "Primer y segundo apellido del estudiante" },
+        "cedula": { "type": "string", "description": "Número de Identificación" },
+        "edad": { "type": "string", "description": "Edad del inscrito" },
+        "whatsapp": { "type": "string", "description": "Número telefónico para contacto" },
+        "motivo": { "type": "string", "description": "Motivo opcional de preinscripción" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Fecha del envío del formulario" }
+      },
+      "required": ["nombres", "apellidos", "cedula", "whatsapp"]
+    }
+  },
+  "firestore": {
+    "/configuracion/{docId}": {
+      "schema": "Configuracion",
+      "description": "Colección de documentos de configuración general editable por admins (usualmente doc 'global')"
+    },
+    "/usuarios/{usuarioId}": {
+      "schema": "Usuario",
+      "description": "Colección de miembros con perfiles digitales accesibles por códigos QR"
+    },
+    "/inscritos_instituto/{inscritoId}": {
+      "schema": "InscritoInstituto",
+      "description": "Colección para almacenar envíos pre-inscripción de alumnos interesados en cursar estudios bíblicos"
+    }
+  }
+}

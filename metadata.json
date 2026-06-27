@@ -1,0 +1,6 @@
+{
+  "name": "FIEP Columna de Fuego",
+  "description": "Plataforma oficial de la Federación de Iglesias Evangélicas Pentecostales Columna de Fuego. Credenciales digitales, inscripciones al Instituto Bíblico y gestión dinámica de misiones y pastores.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

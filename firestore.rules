@@ -1,0 +1,73 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 1. CONFIGURACION COLLECTION: Accessible by everyone for reading, editable only by authenticated administrators
+    match /configuracion/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // 2. MEMBERS / DIRECTORY COLLECTIONS (usuarios, gremio, evangelismo, miembros_generales)
+    // - Allow read of documents for QR verification & public lists
+    // - Allow public registration write (create/update) for secretary and user registrations
+    // - Guard deletion exclusively for logged-in administrators
+    match /usuarios/{id} {
+      allow read, create, update: if true;
+      allow delete: if request.auth != null;
+    }
+    match /gremio/{id} {
+      allow read, create, update: if true;
+      allow delete: if request.auth != null;
+    }
+    match /evangelismo/{id} {
+      allow read, create, update: if true;
+      allow delete: if request.auth != null;
+    }
+    match /miembros_generales/{id} {
+      allow read, create, update: if true;
+      allow delete: if request.auth != null;
+    }
+
+    // 3. INSCRITOS_INSTITUTO COLLECTION (Institute Pre-enrollments)
+    // - Any public visitor can create/submit an enrollment
+    // - Only logged-in administrators can listen/list and manage these enrollments
+    match /inscritos_instituto/{inscritoId} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null;
+    }
+
+    // 4. PUBLICACIONES COLLECTION (timeline announcements feed)
+    // - Anyone can read the announcements feed
+    // - Only authenticated administrators can create, update, or delete announcements
+    match /publicaciones/{pubId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // 5. PRESBITEROS_ZONA, JUNTA_DIRECTIVA, DIRECTIVA_EVANGELISMO, DIRECTIVA_INSTITUTO COLLECTIONS
+    // - Allow anyone to read the lists/boards
+    // - Only authenticated administrators can manage them
+    match /presbiteros_zona/{id} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /junta_directiva/{id} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /directiva_evangelismo/{id} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /directiva_instituto/{id} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}

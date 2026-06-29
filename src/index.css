@@ -81,3 +81,10 @@ h1, h2, h3, h4, h5, h6 {
 .texto-oscuro-fief {
   color: #1e293b !important;
 }
+
+/* Clase CSS .directivo-foto para mantener proporción y cover */
+.directivo-foto {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}

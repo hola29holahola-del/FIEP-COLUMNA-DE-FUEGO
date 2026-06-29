@@ -91,9 +91,11 @@ export default function Directories({
 
   // Pastors list states
   const [pastorQuery, setPastorQuery] = useState("");
+  const [openPastorZones, setOpenPastorZones] = useState<string[]>([]);
 
   // Evangelismo list states
   const [evQuery, setEvQuery] = useState("");
+  const [openEvZones, setOpenEvZones] = useState<string[]>([]);
 
   // Miembros list states
   const [miembrosQuery, setMiembrosQuery] = useState("");
@@ -595,68 +597,124 @@ export default function Directories({
             )}
           </div>
 
-          {/* Pastors Grid rendering */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {pastorsList.map((user) => (
-              <div
-                key={user.id}
-                className="bg-white hover:bg-slate-50/50 border border-slate-100 p-5 rounded-3xl hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-4"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="h-16 w-16 rounded-full overflow-hidden border bg-slate-100 relative flex-shrink-0 flex items-center justify-center">
-                    {user.photoUrl ? (
-                      <img
-                        src={user.photoUrl}
-                        alt=""
-                        className="h-full w-full object-cover"
-                        referrerPolicy="no-referrer"
-                      />
-                    ) : (
-                      <User className="h-8 w-8 text-slate-300" />
-                    )}
-                  </div>
-                  <div className="text-left space-y-1">
-                    <span className="inline-block text-[8px] font-mono uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
-                      {user.ministerio || "Pastor Titular"}
-                    </span>
-                    <h4 className="text-sm font-black text-slate-900 font-display">
-                      {user.nombres} {user.apellidos}
-                    </h4>
-                    <p className="text-[11px] text-slate-450 font-semibold leading-none">{user.iglesia}</p>
-                  </div>
-                </div>
+          {/* Pastors Grid grouped by 13 Zones */}
+          <div className="space-y-4">
+            {Array.from({ length: 13 }, (_, i) => `Zona ${i + 1}`).map((zone) => {
+              // Filter pastors for this zone
+              const zonePastors = pastorsList.filter(
+                (user) => (user.zona || "").trim().toLowerCase() === zone.toLowerCase()
+              );
 
-                <div className="border-t pt-3 flex items-center justify-between text-[11px]">
-                  <span className="font-mono text-slate-400">{adminLoggedIn ? `ID: ${user.cedula}` : "ID: Protegido"}</span>
-                  
-                  <div className="flex items-center gap-2">
-                    {adminLoggedIn && onDeleteMember && (
-                      <button
-                        onClick={async () => {
-                          await onDeleteMember(user.id);
-                        }}
-                        className="py-1 px-2.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold rounded-lg text-[9px] uppercase tracking-wider flex items-center gap-1 cursor-pointer transition shadow-3xs"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                        <span>Eliminar</span>
-                      </button>
-                    )}
-                    {adminLoggedIn && (
-                      <button
-                        onClick={() => {
-                          const dynamicUrl = `${window.location.origin}/ver-miembro/${user.id}`;
-                          window.open(dynamicUrl, "_blank");
-                        }}
-                        className="py-1 px-3 bg-blue-900 hover:bg-blue-800 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider flex items-center gap-1 cursor-pointer transition shadow-3xs"
-                      >
-                        <span>Ver Credencial</span>
-                        <ArrowRight className="h-3 w-3" />
-                      </button>
-                    )}
-                  </div>
+              const isSearchActive = pastorQuery.trim() !== "";
+              const isOpen = openPastorZones.includes(zone) || (isSearchActive && zonePastors.length > 0);
+
+              const toggleZone = () => {
+                if (openPastorZones.includes(zone)) {
+                  setOpenPastorZones(openPastorZones.filter((z) => z !== zone));
+                } else {
+                  setOpenPastorZones([...openPastorZones, zone]);
+                }
+              };
+
+              return (
+                <div key={zone} className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-3xs transition-all hover:border-blue-100">
+                  {/* Accordion header button */}
+                  <button
+                    onClick={toggleZone}
+                    className="w-full flex items-center justify-between p-4 bg-slate-50/60 hover:bg-slate-50 text-left font-display text-xs font-black uppercase tracking-wider text-slate-800 border-b border-slate-100 transition cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
+                      <span>{zone}</span>
+                      <span className="ml-2 py-0.5 px-2 bg-blue-100 text-blue-800 rounded-full font-mono font-bold text-[10px] lowercase tracking-normal">
+                        {zonePastors.length} {zonePastors.length === 1 ? "pastor" : "pastores"}
+                      </span>
+                    </div>
+                    <div>
+                      {isOpen ? (
+                        <ChevronUp className="h-4 w-4 text-slate-500" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 text-slate-500" />
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Accordion Content rendering */}
+                  {isOpen && (
+                    <div className="p-5 bg-slate-50/10">
+                      {zonePastors.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-fadeIn">
+                          {zonePastors.map((user) => (
+                            <div
+                              key={user.id}
+                              className="bg-white hover:bg-slate-50/50 border border-slate-100 p-5 rounded-3xl hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-4"
+                            >
+                              <div className="flex items-start gap-4">
+                                <div className="h-16 w-16 rounded-full overflow-hidden border bg-slate-100 relative flex-shrink-0 flex items-center justify-center">
+                                  {user.photoUrl ? (
+                                    <img
+                                      src={user.photoUrl}
+                                      alt=""
+                                      className="h-full w-full object-cover"
+                                      referrerPolicy="no-referrer"
+                                    />
+                                  ) : (
+                                    <User className="h-8 w-8 text-slate-300" />
+                                  )}
+                                </div>
+                                <div className="text-left space-y-1">
+                                  <span className="inline-block text-[8px] font-mono uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+                                    {user.ministerio || "Pastor Titular"}
+                                  </span>
+                                  <h4 className="text-sm font-black text-slate-900 font-display">
+                                    {user.nombres} {user.apellidos}
+                                  </h4>
+                                  <p className="text-[11px] text-slate-450 font-semibold leading-none">{user.iglesia}</p>
+                                </div>
+                              </div>
+
+                              <div className="border-t pt-3 flex items-center justify-between text-[11px]">
+                                <span className="font-mono text-slate-400">{adminLoggedIn ? `ID: ${user.cedula}` : "ID: Protegido"}</span>
+                                
+                                <div className="flex items-center gap-2">
+                                  {adminLoggedIn && onDeleteMember && (
+                                    <button
+                                      onClick={async () => {
+                                        await onDeleteMember(user.id);
+                                      }}
+                                      className="py-1 px-2.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold rounded-lg text-[9px] uppercase tracking-wider flex items-center gap-1 cursor-pointer transition shadow-3xs"
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                      <span>Eliminar</span>
+                                    </button>
+                                  )}
+                                  {adminLoggedIn && (
+                                    <button
+                                      onClick={() => {
+                                        const dynamicUrl = `${window.location.origin}/ver-miembro/${user.id}`;
+                                        window.open(dynamicUrl, "_blank");
+                                      }}
+                                      className="py-1 px-3 bg-blue-900 hover:bg-blue-800 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider flex items-center gap-1 cursor-pointer transition shadow-3xs"
+                                    >
+                                      <span>Ver Credencial</span>
+                                      <ArrowRight className="h-3 w-3" />
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-6 text-slate-400 italic text-xs">
+                          Ningún pastor registrado en esta zona.
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {pastorsList.length === 0 && (
               <div className="col-span-full py-12 text-center text-slate-400 font-medium italic">
@@ -807,68 +865,124 @@ A través de campañas, conferencias y capacitación continua, impulsamos la pro
             )}
           </div>
 
-          {/* Missionaries Grid rendering */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {evangelistasList.map((user) => (
-              <div
-                key={user.id}
-                className="bg-white hover:bg-slate-50/50 border border-slate-100 p-5 rounded-3xl hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-4"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="h-16 w-16 rounded-full overflow-hidden border bg-slate-100 relative flex-shrink-0 flex items-center justify-center">
-                    {user.photoUrl ? (
-                      <img
-                        src={user.photoUrl}
-                        alt=""
-                        className="h-full w-full object-cover"
-                        referrerPolicy="no-referrer"
-                      />
-                    ) : (
-                      <User className="h-8 w-8 text-slate-300" />
-                    )}
-                  </div>
-                  <div className="text-left space-y-1">
-                    <span className="inline-block text-[8px] font-mono uppercase tracking-wider text-purple-600 bg-purple-50 px-2 py-0.5 rounded">
-                      {user.ministerio || "Evangelista Certificado"}
-                    </span>
-                    <h4 className="text-sm font-black text-slate-900 font-display">
-                      {user.nombres} {user.apellidos}
-                    </h4>
-                    <p className="text-[11px] text-slate-450 font-semibold leading-none">{user.iglesia}</p>
-                  </div>
-                </div>
+          {/* Missionaries Grid grouped by 13 Zones */}
+          <div className="space-y-4">
+            {Array.from({ length: 13 }, (_, i) => `Zona ${i + 1}`).map((zone) => {
+              // Filter evangelistas for this zone
+              const zoneEvangelistas = evangelistasList.filter(
+                (user) => (user.zona || "").trim().toLowerCase() === zone.toLowerCase()
+              );
 
-                <div className="border-t pt-3 flex items-center justify-between text-[11px]">
-                  <span className="font-mono text-slate-400">{adminLoggedIn ? `ID: ${user.cedula}` : "ID: Protegido"}</span>
-                  
-                  <div className="flex items-center gap-2">
-                    {adminLoggedIn && onDeleteMember && (
-                      <button
-                        onClick={async () => {
-                          await onDeleteMember(user.id);
-                        }}
-                        className="py-1 px-2.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold rounded-lg text-[9px] uppercase tracking-wider flex items-center gap-1 cursor-pointer transition shadow-3xs"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                        <span>Eliminar</span>
-                      </button>
-                    )}
-                    {adminLoggedIn && (
-                      <button
-                        onClick={() => {
-                          const dynamicUrl = `${window.location.origin}/ver-miembro/${user.id}`;
-                          window.open(dynamicUrl, "_blank");
-                        }}
-                        className="py-1 px-3 bg-purple-900 hover:bg-purple-800 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider flex items-center gap-1 cursor-pointer transition shadow-3xs"
-                      >
-                        <span>Ver Credencial</span>
-                        <ArrowRight className="h-3 w-3" />
-                      </button>
-                    )}
-                  </div>
+              const isSearchActive = evQuery.trim() !== "";
+              const isOpen = openEvZones.includes(zone) || (isSearchActive && zoneEvangelistas.length > 0);
+
+              const toggleZone = () => {
+                if (openEvZones.includes(zone)) {
+                  setOpenEvZones(openEvZones.filter((z) => z !== zone));
+                } else {
+                  setOpenEvZones([...openEvZones, zone]);
+                }
+              };
+
+              return (
+                <div key={zone} className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-3xs transition-all hover:border-purple-100">
+                  {/* Accordion header button */}
+                  <button
+                    onClick={toggleZone}
+                    className="w-full flex items-center justify-between p-4 bg-slate-50/60 hover:bg-slate-50 text-left font-display text-xs font-black uppercase tracking-wider text-slate-800 border-b border-slate-100 transition cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="h-2 w-2 rounded-full bg-purple-600 animate-pulse" />
+                      <span>{zone}</span>
+                      <span className="ml-2 py-0.5 px-2 bg-purple-100 text-purple-850 rounded-full font-mono font-bold text-[10px] lowercase tracking-normal">
+                        {zoneEvangelistas.length}
+                      </span>
+                    </div>
+                    <div>
+                      {isOpen ? (
+                        <ChevronUp className="h-4 w-4 text-slate-500" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 text-slate-500" />
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Accordion Content rendering */}
+                  {isOpen && (
+                    <div className="p-5 bg-slate-50/10">
+                      {zoneEvangelistas.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-fadeIn">
+                          {zoneEvangelistas.map((user) => (
+                            <div
+                              key={user.id}
+                              className="bg-white hover:bg-slate-50/50 border border-slate-100 p-5 rounded-3xl hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-4"
+                            >
+                              <div className="flex items-start gap-4">
+                                <div className="h-16 w-16 rounded-full overflow-hidden border bg-slate-100 relative flex-shrink-0 flex items-center justify-center">
+                                  {user.photoUrl ? (
+                                    <img
+                                      src={user.photoUrl}
+                                      alt=""
+                                      className="h-full w-full object-cover"
+                                      referrerPolicy="no-referrer"
+                                    />
+                                  ) : (
+                                    <User className="h-8 w-8 text-slate-300" />
+                                  )}
+                                </div>
+                                <div className="text-left space-y-1">
+                                  <span className="inline-block text-[8px] font-mono uppercase tracking-wider text-purple-600 bg-purple-50 px-2 py-0.5 rounded">
+                                    {user.ministerio || "Evangelista Certificado"}
+                                  </span>
+                                  <h4 className="text-sm font-black text-slate-900 font-display">
+                                    {user.nombres} {user.apellidos}
+                                  </h4>
+                                  <p className="text-[11px] text-slate-450 font-semibold leading-none">{user.iglesia}</p>
+                                </div>
+                              </div>
+
+                              <div className="border-t pt-3 flex items-center justify-between text-[11px]">
+                                <span className="font-mono text-slate-400">{adminLoggedIn ? `ID: ${user.cedula}` : "ID: Protegido"}</span>
+                                
+                                <div className="flex items-center gap-2">
+                                  {adminLoggedIn && onDeleteMember && (
+                                    <button
+                                      onClick={async () => {
+                                        await onDeleteMember(user.id);
+                                      }}
+                                      className="py-1 px-2.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold rounded-lg text-[9px] uppercase tracking-wider flex items-center gap-1 cursor-pointer transition shadow-3xs"
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                      <span>Eliminar</span>
+                                    </button>
+                                  )}
+                                  {adminLoggedIn && (
+                                    <button
+                                      onClick={() => {
+                                        const dynamicUrl = `${window.location.origin}/ver-miembro/${user.id}`;
+                                        window.open(dynamicUrl, "_blank");
+                                      }}
+                                      className="py-1 px-3 bg-purple-900 hover:bg-purple-800 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider flex items-center gap-1 cursor-pointer transition shadow-3xs"
+                                    >
+                                      <span>Ver Credencial</span>
+                                      <ArrowRight className="h-3 w-3" />
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-6 text-slate-400 italic text-xs">
+                          Ningún miembro registrado en esta zona.
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {evangelistasList.length === 0 && (
               <div className="col-span-full py-12 text-center text-slate-400 font-medium italic">

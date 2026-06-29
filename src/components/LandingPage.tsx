@@ -994,7 +994,7 @@ export default function LandingPage({
                 )}
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+              <div className="grid grid-cols-4 gap-2 sm:gap-4">
                 {boardOfDirectors.map((mbr, index) => (
                   <div
                     key={index}

@@ -68,28 +68,28 @@ export default function DirectivosGrid({
               </div>
             )}
 
-            {/* Portrait Frame container */}
-            <div className="pt-2 sm:pt-4 pb-1 sm:pb-2 flex justify-center items-center select-none">
-              <div className="h-10 w-10 sm:h-16 sm:w-16 rounded-lg sm:rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-white flex-shrink-0 relative flex items-center justify-center">
+            {/* Portrait Frame container matching exact National Board photo box size with .directivo-foto */}
+            <div className="pt-2 sm:pt-4 pb-1.5 flex justify-center items-center select-none">
+              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-50 flex-shrink-0 relative flex items-center justify-center">
                 {mbr.photoUrl ? (
                   <img
                     src={mbr.photoUrl}
                     alt={`${mbr.nombre} ${mbr.apellido || ""}`}
                     referrerPolicy="no-referrer"
-                    className="h-full w-full object-contain group-hover/mbrCard:scale-105 transition-transform duration-500 relative z-10 p-0.5"
+                    className="directivo-foto group-hover/mbrCard:scale-105 transition-transform duration-500 relative z-10"
                   />
                 ) : (
-                  <User className="h-5 w-5 sm:h-7 sm:w-7 text-slate-300 stroke-1" />
+                  <User className="h-6 w-6 sm:h-10 sm:w-10 text-slate-300 stroke-1" />
                 )}
               </div>
             </div>
 
-            {/* Text description details */}
-            <div className="p-1.5 sm:p-3 text-center bg-white border-t border-slate-50 space-y-0.5 flex-grow flex flex-col justify-center min-h-[48px] sm:min-h-[56px]">
-              <div className={`text-[7px] sm:text-[9px] font-black uppercase font-mono tracking-wider leading-none ${badgeBg} py-0.5 rounded px-1 self-center max-w-full truncate`}>
+            {/* Text description details - White-space normal and word-wrap break-word to prevent cuts */}
+            <div className="p-1.5 sm:p-3 text-center bg-white border-t border-slate-50 space-y-1 flex-grow flex flex-col justify-center min-h-[56px] sm:min-h-[64px]">
+              <div className={`text-[7px] sm:text-[9px] font-black uppercase font-mono tracking-wider leading-normal ${badgeBg} py-0.5 rounded px-1 self-center max-w-full whitespace-normal break-words`}>
                 {mbr.cargo}
               </div>
-              <h6 className="text-[9px] sm:text-[11px] font-black text-slate-900 font-display leading-tight line-clamp-2">
+              <h6 className="text-[9px] sm:text-[11px] font-black text-slate-900 font-display leading-tight">
                 {mbr.nombre} {mbr.apellido || ""}
               </h6>
             </div>

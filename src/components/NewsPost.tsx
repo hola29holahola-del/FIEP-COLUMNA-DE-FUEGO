@@ -1,5 +1,5 @@
-import React from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import React, { useState } from "react";
+import { Pencil, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 
 interface NewsPostProps {
   ano: string;
@@ -20,6 +20,10 @@ export default function NewsPost({
   onEdit,
   onDelete
 }: NewsPostProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const isLongText = descripcion && descripcion.length > 150;
+  const displayedText = isLongText && !isExpanded ? `${descripcion.substring(0, 150)}...` : descripcion;
+
   return (
     <div className="bg-white hover:bg-slate-50/40 p-6 sm:p-8 rounded-[2rem] border border-slate-100 hover:border-sky-150 shadow-3xs hover:shadow-2xs transition-all duration-300 relative group/newsCard flex flex-col w-full text-left" id="news-post-container">
       
@@ -62,8 +66,24 @@ export default function NewsPost({
         {/* WIDE & SHORT TEXT BLOCK: Stretches completely across the container horizontally */}
         <div className="w-full">
           <p className="text-xs sm:text-xs text-slate-600 font-medium leading-relaxed font-sans whitespace-pre-wrap w-full text-justify sm:text-left">
-            {descripcion}
+            {displayedText}
           </p>
+          {isLongText && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="mt-1.5 text-[10px] font-extrabold uppercase tracking-wider text-blue-700 hover:text-blue-800 transition flex items-center gap-1 cursor-pointer"
+            >
+              {isExpanded ? (
+                <>
+                  Ver menos <ChevronUp className="h-3 w-3" />
+                </>
+              ) : (
+                <>
+                  Ver más <ChevronDown className="h-3 w-3" />
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
 

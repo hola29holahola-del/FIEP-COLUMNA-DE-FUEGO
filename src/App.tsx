@@ -1028,6 +1028,7 @@ export default function App() {
         onNavigateBack={() => navigateToTab("inicio")}
         allEnrollments={allEnrollments}
         onDeleteEnrollment={handleDeleteEnrollment}
+        allUsers={allUsers}
       />
     );
   }
